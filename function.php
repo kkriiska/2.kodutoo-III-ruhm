@@ -1,7 +1,7 @@
 <?php
 
 	//functions.php
-	require("../../config.php");
+	require("../../../config.php");
 	
 	//et saab kasutada $_SESSION muutujaid
 	//koigis failides mis on selle failiga seotud
