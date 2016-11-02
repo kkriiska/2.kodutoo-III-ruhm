@@ -37,15 +37,15 @@
 	Tere tulemast <? = $_SESSION["userEmail"];?>!
 	<a href = "?logout = 1">Logi valja</a>
 </p>
-<h2>MÃ¤rkmed</h2>
+<h2>Märkmed</h2>
 <form method="POST">
 			
-	<label>MÃ¤rkus</label><br>
+	<label>Märkus</label><br>
 	<input name="note" type="text">
 	
 	<br><br>
 	
-	<label>VÃ¤rv</label><br>
+	<label>Värv</label><br>
 	<input name="color" type="color">
 				
 	<br><br>
@@ -78,8 +78,8 @@
 		
 		$html .= "<tr>";
 			$html .= "<th>id</th>";
-			$html .= "<th>MÃ¤rkus</th>";
-			$html .= "<th>VÃ¤rv</th>";
+			$html .= "<th>Märkus</th>";
+			$html .= "<th>Värv</th>";
 		$html .= "</tr>";
 	foreach ($notes as $note) {
 		$html .= "<tr>";
