@@ -11,16 +11,16 @@
 
 	//var_dump($GLOBALS);
 
-	function signup($email, $password) {
+	function signup($username, $email, $password) {
 	
 		$mysqlu = new mysqli(
 	
 		$GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"] );
 	
-		$stmt = $mysqi->prepare("INSERT INTO user_sample (email, password) VALUES(?, ?)");
+		$stmt = $mysqli->prepare("INSERT INTO user_sample(username, email, password) VALUES(?, ?, ?)");
 		echo $mysqli->error;
 	
-		$stmt->bind_param("ss", $email, $password);
+		$stmt->bind_param("sss", $username, $email, $password);
 	
 		if ($stmt->execute()) {
 			echo "salvestamine onnestus";
@@ -29,19 +29,19 @@
 		}
 	}
 	
-	function login($email, $password) {
+	function login($username, $password) {
 		
 		$notice = "";
 		
 		$mysqli = new mysqli ($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		
-		$stmt = $mysqli->prepare ("SELECT id, email, password, created FROM user_sample WHERE email = ?");
+		$stmt = $mysqli->prepare ("SELECT id, username, email, password, created FROM user_sample WHERE email = ?");
 		
 		//asendan?
-		$stmt->bind_param ("s", $email);
+		$stmt->bind_param ("ss", $username, $username);
 		
 		//maaran muutujad reale mis katte saan
-		$stmt->binf_result ($id, $emailFromDb, $passwordFromDb, $created);
+		$stmt->bind_result ($id, $usernameFromDb, $emailFromDb, $passwordFromDb, $created);
 		
 		$stmt->execute();
 		//ainult SELECTi puhul
@@ -56,9 +56,11 @@
 					echo "Kasutaja ".$id." logis sisse";
 					
 					$_SESSION["userId"] = $id;
+					$_SESSION["userUsername"] = $usernameFromDb;
 					$_SESSION["userEmail"] = $emailFromDb;
 					
 					header("Location: data.php");
+					exit();
 					
 				}else{
 					
@@ -133,7 +135,86 @@
 		return $input;
 	}
 	
+	function saveInterest ($interest) {
+	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+	$stmt = $mysqli->prepare("INSERT INTO interests (interest) VALUES (?)");
+	echo $mysqli->error;
+	$stmt->bind_param("s", $interest);
+	if($stmt->execute()) {
+		echo "salvestamine õnnestus";
+	} else {
+		echo "ERROR ".$stmt->error;
+	}
+	$stmt->close();
+	$mysqli->close();
+}
+function saveUserInterest ($interest) {
 	
+	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+	$stmt = $mysqli->prepare("
+		SELECT id FROM user_interests 
+		WHERE user_id=? AND interest_id=?
+		");
+		
+	echo $mysqli->error;
+	
+	$stmt->bind_param("ii", $_SESSION["userId"], $interest);
+	$stmt->execute();
+	
+	//kas oli olemas
+	if ($stmt->fetch()) {
+		
+		//oli olemas, ei salvesta
+		echo "Juba olemas";	
+		return; //see katkestab funktsiooni, edasi ei loe koodi
+	}
+	//lähme edasi ja salvestamine
+	$stmt->close();
+	
+	$stmt = $mysqli->prepare("
+		INSERT INTO user_interests 
+		(user_id, interest_id) VALUES (?, ?)
+		");
+	echo $mysqli->error;
+	$stmt->bind_param("ii", $_SESSION["userId"], $interest);
+	if($stmt->execute()) {
+		echo "salvestamine õnnestus";
+	} else {
+		echo "ERROR ".$stmt->error;
+	}
+	$stmt->close();
+	$mysqli->close();
+}
+	function getAllInterests() {
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("
+			SELECT id, interest
+			FROM interests 
+		");
+		echo $mysqli->error;
+		$stmt->bind_result($id, $interest);
+		$stmt->execute();
+		//tekitan massiivi
+		$result = array();
+		//tee seda seni, kuni on rida andmeid
+		//mis vastab select lausele
+		while ($stmt->fetch()) {
+			//tekitan objekti
+			$i = new StdClass();
+			$i->id = $id;
+			$i->interest = $interest;
+			
+			array_push($result, $i);
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $result;
+		
+	}
+
+
+//return htmlspecialchars(stripslashes(trim($input)));
 	/*function sum($x, $y) {
 		$answer = $x+$y;
 		

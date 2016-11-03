@@ -27,30 +27,29 @@
 	}
 	$notes = getAllNotes();
 	
-	//echo "<pre>";
+	echo "<pre>";
 	//var_dump($notes);
-	//echo "</pre>";
+	echo "</pre>";
 ?>
 
 <h1>Data</h1>
 <p>
-	Tere tulemast <? = $_SESSION["userEmail"];?>!
+	Tere tulemast <a href="user.php"><? = $_SESSION["userUsername"];?>!
 	<a href = "?logout = 1">Logi valja</a>
 </p>
 <h2>Märkmed</h2>
 <form method="POST">
 			
-	<label>Märkus</label><br>
-	<input name="note" type="text">
-	
+	<textarea name="note" rows="5" cols="25"></textarea>
+
+	<br><br>
+			
+	<input placeholder="Vali värv" name="color" type="color">
+			
+			
 	<br><br>
 	
-	<label>Värv</label><br>
-	<input name="color" type="color">
-				
-	<br><br>
-	
-	<input type="submit">
+	<input type="submit" value="Salvesta">
 
 </form>
 
@@ -61,11 +60,7 @@
 	//iga liikme kohta massiivis
 	foreach ($notes as $n) {
 		
-		$style = "width:100px; 
-				  float:left;
-				  min-height:100px; 
-				  border: 1px solid gray;
-				  background-color: ".$n->noteColor.";";
+		$style = "width:200px; float:left; min-height:100px; border: 1px solid gray; background-color: ".$n->noteColor.";";
 		
 		echo "<p style='  ".$style."  '>".$n->note."</p>";
 	}
@@ -81,6 +76,7 @@
 			$html .= "<th>Märkus</th>";
 			$html .= "<th>Värv</th>";
 		$html .= "</tr>";
+		
 	foreach ($notes as $note) {
 		$html .= "<tr>";
 			$html .= "<td>".$note->id."</td>";

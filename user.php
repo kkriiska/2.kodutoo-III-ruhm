@@ -74,7 +74,7 @@
 ?>
 <form method="POST">
 	
-	<label>Hobi/huviala nimi</label><br>
+	<label>Hobi</label><br>
 	<input name="interest" type="text">
 	
 	<input type="submit" value="Salvesta">
